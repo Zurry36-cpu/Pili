@@ -59,17 +59,58 @@
         .admin-only { display: none; }
         .logged-in .admin-only { display: block; }
         
-        /* Novo estilo para cupons */
+        /* Estilo para cupons */
         .coupon-badge {
             font-size: 0.8rem;
+            margin-left: 5px;
+        }
+        .discount-text {
+            color: #28a745;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
     <!-- Loja Virtual -->
     <div id="storeContent">
-        <!-- Navbar (mantido igual) -->
-        <!-- Conteúdo Principal (mantido igual) -->
+        <!-- Navbar -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="#">Super Loja</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav me-auto">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">Produtos</a>
+                        </li>
+                    </ul>
+                    <div class="d-flex">
+                        <button class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">
+                            <i class="bi bi-person"></i> Login
+                        </button>
+                        <button class="btn btn-outline-light position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
+                            <i class="bi bi-cart"></i> Carrinho
+                            <span id="cartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Conteúdo Principal -->
+        <div class="container my-5">
+            <h1 class="mb-4">Nossos Produtos</h1>
+            
+            <div class="row" id="productsContainer">
+                <!-- Produtos serão carregados aqui -->
+            </div>
+        </div>
+
         <!-- Carrinho de Compras (Offcanvas) -->
         <div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas">
             <div class="offcanvas-header">
@@ -83,27 +124,52 @@
                 </div>
                 <div class="mt-3">
                     <div class="input-group mb-3">
-                        <input type="text" class="form-control" id="couponCode" placeholder="Cupom de desconto">
+                        <input type="text" class="form-control" id="couponCode" placeholder="Código do cupom">
                         <button class="btn btn-outline-secondary" type="button" id="applyCouponBtn">Aplicar</button>
                     </div>
-                    <div id="couponApplied" class="d-none mb-2">
-                        <span class="badge bg-success coupon-badge">Cupom aplicado: <span id="couponName"></span> (<span id="couponValue"></span>)</span>
-                        <button class="btn btn-sm btn-outline-danger ms-2" id="removeCouponBtn">Remover</button>
-                    </div>
+                    <div id="couponMessage" class="small mb-2"></div>
                     <h5>Subtotal: <span id="cartSubtotal">R$ 0,00</span></h5>
-                    <h5 class="d-none" id="discountRow">Desconto: -<span id="cartDiscount">R$ 0,00</span></h5>
+                    <div id="discountContainer" style="display: none;">
+                        <h5 class="discount-text">Desconto: -<span id="cartDiscount">R$ 0,00</span></h5>
+                    </div>
                     <h5>Total: <span id="cartTotal">R$ 0,00</span></h5>
                     <button class="btn btn-primary w-100 mt-3" id="checkoutBtn">Finalizar Compra</button>
                 </div>
             </div>
         </div>
 
-        <!-- Modal de Login (mantido igual) -->
+        <!-- Modal de Login -->
+        <div class="modal fade" id="loginModal" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Login</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="loginForm">
+                            <div class="mb-3">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Senha</label>
+                                <input type="password" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                        </form>
+                        <div class="text-center mt-3">
+                            <small class="text-muted">Use admin@example.com / admin123 para acessar o painel</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
     <!-- Painel Admin -->
     <div id="dashboardContent">
-        <!-- Sidebar - Adicionado link para Cupons -->
+        <!-- Sidebar -->
         <div class="sidebar">
             <div class="text-center mb-4">
                 <h4>Painel Admin</h4>
@@ -122,13 +188,13 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link orders-link" href="#">
-                        <i class="bi bi-receipt me-2"></i> Pedidos
+                    <a class="nav-link coupons-link" href="#">
+                        <i class="bi bi-tag me-2"></i> Cupons
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link coupons-link" href="#">
-                        <i class="bi bi-tag me-2"></i> Cupons
+                    <a class="nav-link orders-link" href="#">
+                        <i class="bi bi-receipt me-2"></i> Pedidos
                     </a>
                 </li>
                 <li class="nav-item">
@@ -139,11 +205,136 @@
             </ul>
         </div>
 
-        <!-- Main Content - Adicionada seção de Cupons -->
+        <!-- Main Content -->
         <div class="main-content">
-            <!-- Dashboard (mantido igual) -->
-            <!-- Gerenciamento de Produtos (mantido igual) -->
-            <!-- Gerenciamento de Pedidos (mantido igual) -->
+            <!-- Dashboard -->
+            <div class="dashboard-section" id="dashboardSection">
+                <h2><i class="bi bi-speedometer2"></i> Dashboard</h2>
+                <hr>
+                
+                <div class="row">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stat-card" style="background: linear-gradient(135deg, #4e73df, #224abe);">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <h5 class="card-title">PRODUTOS</h5>
+                                        <h2 class="mb-0" id="totalProducts">0</h2>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-box-seam" style="font-size: 2rem; opacity: 0.7;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stat-card" style="background: linear-gradient(135deg, #1cc88a, #13855c);">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <h5 class="card-title">PEDIDOS</h5>
+                                        <h2 class="mb-0" id="totalOrders">0</h2>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-receipt" style="font-size: 2rem; opacity: 0.7;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stat-card" style="background: linear-gradient(135deg, #36b9cc, #258391);">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <h5 class="card-title">VENDAS</h5>
+                                        <h2 class="mb-0" id="totalSales">R$ 0</h2>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-currency-dollar" style="font-size: 2rem; opacity: 0.7;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stat-card" style="background: linear-gradient(135deg, #f6c23e, #dda20a);">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <h5 class="card-title">CUPONS</h5>
+                                        <h2 class="mb-0" id="totalCoupons">0</h2>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-tag" style="font-size: 2rem; opacity: 0.7;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Últimos Pedidos</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Data</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentOrders">
+                                    <!-- Pedidos serão inseridos aqui -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Gerenciamento de Produtos -->
+            <div class="dashboard-section" id="productsSection" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="bi bi-box-seam"></i> Gerenciar Produtos</h2>
+                    <button class="btn btn-primary" id="addProductBtn">
+                        <i class="bi bi-plus"></i> Adicionar Produto
+                    </button>
+                </div>
+                <hr>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Imagem</th>
+                                        <th>Nome</th>
+                                        <th>Preço</th>
+                                        <th>Estoque</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productsTable">
+                                    <!-- Produtos serão inseridos aqui -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
             
             <!-- Gerenciamento de Cupons -->
             <div class="dashboard-section" id="couponsSection" style="display: none;">
@@ -178,11 +369,75 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Gerenciamento de Pedidos -->
+            <div class="dashboard-section" id="ordersSection" style="display: none;">
+                <h2><i class="bi bi-receipt"></i> Gerenciar Pedidos</h2>
+                <hr>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Data</th>
+                                        <th>Cliente</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTable">
+                                    <!-- Pedidos serão inseridos aqui -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Modal para Adicionar/Editar Produto (mantido igual) -->
-    
+    <!-- Modal para Adicionar/Editar Produto -->
+    <div class="modal fade" id="productModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="productModalTitle">Adicionar Produto</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="productForm">
+                        <input type="hidden" id="productId">
+                        <div class="mb-3">
+                            <label class="form-label">Nome do Produto</label>
+                            <input type="text" class="form-control" id="productName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Preço (R$)</label>
+                            <input type="number" step="0.01" class="form-control" id="productPrice" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Quantidade em Estoque</label>
+                            <input type="number" class="form-control" id="productStock" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">URL da Imagem</label>
+                            <input type="url" class="form-control" id="productImage" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descrição</label>
+                            <textarea class="form-control" id="productDescription" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Salvar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal para Adicionar/Editar Cupom -->
     <div class="modal fade" id="couponModal" tabindex="-1">
         <div class="modal-dialog">
@@ -196,26 +451,26 @@
                         <input type="hidden" id="couponId">
                         <div class="mb-3">
                             <label class="form-label">Código do Cupom</label>
-                            <input type="text" class="form-control" id="couponCodeInput" required>
+                            <input type="text" class="form-control" id="couponCode" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Tipo de Desconto</label>
                             <select class="form-select" id="couponType" required>
-                                <option value="percentage">Porcentagem</option>
-                                <option value="fixed">Valor Fixo</option>
+                                <option value="percentage">Percentual (%)</option>
+                                <option value="fixed">Valor Fixo (R$)</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Valor do Desconto</label>
+                            <label class="form-label" id="couponValueLabel">Valor do Desconto (%)</label>
                             <input type="number" step="0.01" class="form-control" id="couponValue" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Data de Validade</label>
-                            <input type="date" class="form-control" id="couponExpiry">
+                            <input type="date" class="form-control" id="couponExpiry" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Limite de Usos (deixe em branco para ilimitado)</label>
-                            <input type="number" class="form-control" id="couponUsageLimit">
+                            <label class="form-label">Usos Máximos (0 para ilimitado)</label>
+                            <input type="number" class="form-control" id="couponMaxUses" min="0" value="0">
                         </div>
                         <div class="mb-3 form-check">
                             <input type="checkbox" class="form-check-input" id="couponActive">
@@ -230,7 +485,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Banco de dados em localStorage - Adicionado cupons
+        // Banco de dados em localStorage
         const DB = {
             products: JSON.parse(localStorage.getItem('products')) || [
                 { 
@@ -262,41 +517,23 @@
                 { id: 1, date: "2023-06-10", total: 2999.90, status: "Entregue", items: [{productId: 1, quantity: 1}] },
                 { id: 2, date: "2023-06-12", total: 5599.00, status: "Processando", items: [{productId: 2, quantity: 1}] }
             ],
+            coupons: JSON.parse(localStorage.getItem('coupons')) || [
+                { id: 1, code: "DESCONTO10", type: "percentage", value: 10, expiry: "2023-12-31", maxUses: 100, usedCount: 0, active: true },
+                { id: 2, code: "PRIMEIRACOMPRA", type: "fixed", value: 50, expiry: "2023-12-31", maxUses: 0, usedCount: 0, active: true }
+            ],
             users: [
                 { id: 1, email: 'admin@example.com', password: 'admin123', isAdmin: true }
             ],
             cart: JSON.parse(localStorage.getItem('cart')) || [],
-            coupons: JSON.parse(localStorage.getItem('coupons')) || [
-                { 
-                    id: 1, 
-                    code: "DESCONTO10", 
-                    type: "percentage", 
-                    value: 10, 
-                    expiry: "2023-12-31", 
-                    usageLimit: 100, 
-                    usedCount: 0, 
-                    active: true 
-                },
-                { 
-                    id: 2, 
-                    code: "PRIMEIRACOMPRA", 
-                    type: "fixed", 
-                    value: 50, 
-                    expiry: "2023-12-31", 
-                    usageLimit: null, 
-                    usedCount: 0, 
-                    active: true 
-                }
-            ],
             appliedCoupon: JSON.parse(localStorage.getItem('appliedCoupon')) || null
         };
 
-        // Salvar no banco de dados - Adicionado cupons
+        // Salvar no banco de dados
         function saveDB() {
             localStorage.setItem('products', JSON.stringify(DB.products));
             localStorage.setItem('orders', JSON.stringify(DB.orders));
-            localStorage.setItem('cart', JSON.stringify(DB.cart));
             localStorage.setItem('coupons', JSON.stringify(DB.coupons));
+            localStorage.setItem('cart', JSON.stringify(DB.cart));
             localStorage.setItem('appliedCoupon', JSON.stringify(DB.appliedCoupon));
         }
 
@@ -305,11 +542,6 @@
             renderProducts();
             renderCart();
             setupStoreEventListeners();
-            
-            // Verificar se há cupom aplicado
-            if (DB.appliedCoupon) {
-                updateCouponUI(DB.appliedCoupon);
-            }
         }
 
         function renderProducts() {
@@ -336,13 +568,18 @@
         function renderCart() {
             const container = document.getElementById('cartItems');
             const cartSubtotal = document.getElementById('cartSubtotal');
+            const cartTotal = document.getElementById('cartTotal');
+            const discountContainer = document.getElementById('discountContainer');
+            const cartDiscount = document.getElementById('cartDiscount');
             
             if (DB.cart.length === 0) {
                 container.innerHTML = '<p class="text-muted">Seu carrinho está vazio</p>';
                 cartSubtotal.textContent = 'R$ 0,00';
-                document.getElementById('cartTotal').textContent = 'R$ 0,00';
+                cartTotal.textContent = 'R$ 0,00';
                 document.getElementById('cartBadge').textContent = '0';
-                document.getElementById('discountRow').classList.add('d-none');
+                discountContainer.style.display = 'none';
+                DB.appliedCoupon = null;
+                saveDB();
                 return;
             }
             
@@ -351,8 +588,8 @@
                 const product = DB.products.find(p => p.id === item.productId);
                 if (!product) return '';
                 
-                const itemSubtotal = product.price * item.quantity;
-                subtotal += itemSubtotal;
+                const itemTotal = product.price * item.quantity;
+                subtotal += itemTotal;
                 
                 return `
                     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -374,18 +611,12 @@
             
             cartSubtotal.textContent = `R$ ${subtotal.toFixed(2).replace('.', ',')}`;
             
-            // Calcular total com desconto se houver cupom aplicado
-            calculateTotalWithDiscount(subtotal);
-            
-            document.getElementById('cartBadge').textContent = DB.cart.reduce((sum, item) => sum + item.quantity, 0);
-        }
-        
-        function calculateTotalWithDiscount(subtotal) {
+            // Calcular desconto se houver cupom aplicado
             let discount = 0;
             let total = subtotal;
             
             if (DB.appliedCoupon) {
-                const coupon = DB.coupons.find(c => c.id === DB.appliedCoupon.id);
+                const coupon = DB.coupons.find(c => c.code === DB.appliedCoupon.code);
                 if (coupon) {
                     if (coupon.type === 'percentage') {
                         discount = subtotal * (coupon.value / 100);
@@ -395,111 +626,168 @@
                     
                     // Garantir que o desconto não seja maior que o subtotal
                     discount = Math.min(discount, subtotal);
+                    total = subtotal - discount;
                     
-                    document.getElementById('discountRow').classList.remove('d-none');
-                    document.getElementById('cartDiscount').textContent = `R$ ${discount.toFixed(2).replace('.', ',')}`;
+                    discountContainer.style.display = 'block';
+                    cartDiscount.textContent = `R$ ${discount.toFixed(2).replace('.', ',')}`;
+                } else {
+                    DB.appliedCoupon = null;
+                    saveDB();
                 }
             } else {
-                document.getElementById('discountRow').classList.add('d-none');
+                discountContainer.style.display = 'none';
             }
             
-            total = subtotal - discount;
-            document.getElementById('cartTotal').textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            cartTotal.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+            document.getElementById('cartBadge').textContent = DB.cart.reduce((sum, item) => sum + item.quantity, 0);
             
-            return { subtotal, discount, total };
+            // Atualizar mensagem do cupom
+            updateCouponMessage();
         }
-        
-        function updateCouponUI(coupon) {
-            if (!coupon) {
-                document.getElementById('couponApplied').classList.add('d-none');
-                document.getElementById('couponCode').value = '';
-                DB.appliedCoupon = null;
-                saveDB();
-                return;
+
+        function updateCouponMessage() {
+            const couponMessage = document.getElementById('couponMessage');
+            
+            if (DB.appliedCoupon) {
+                const coupon = DB.coupons.find(c => c.code === DB.appliedCoupon.code);
+                if (coupon) {
+                    couponMessage.innerHTML = `
+                        <span class="text-success">
+                            Cupom <strong>${coupon.code}</strong> aplicado! 
+                            <button class="btn btn-sm btn-outline-danger p-0 ms-2 remove-coupon" style="font-size: 0.7rem;">
+                                Remover
+                            </button>
+                        </span>
+                    `;
+                    return;
+                }
             }
             
-            const couponData = DB.coupons.find(c => c.id === coupon.id);
-            if (couponData) {
-                document.getElementById('couponApplied').classList.remove('d-none');
-                document.getElementById('couponName').textContent = couponData.code;
-                
-                if (couponData.type === 'percentage') {
-                    document.getElementById('couponValue').textContent = `${couponData.value}%`;
-                } else {
-                    document.getElementById('couponValue').textContent = `R$ ${couponData.value.toFixed(2)}`;
-                }
-                
-                document.getElementById('couponCode').value = couponData.code;
-                DB.appliedCoupon = { id: couponData.id };
-                saveDB();
-            }
+            couponMessage.textContent = '';
+        }
+
+        function validateCoupon(code) {
+            if (!code) return { valid: false, message: 'Por favor, insira um código de cupom' };
+            
+            const coupon = DB.coupons.find(c => c.code.toUpperCase() === code.toUpperCase());
+            
+            if (!coupon) return { valid: false, message: 'Cupom inválido' };
+            if (!coupon.active) return { valid: false, message: 'Cupom inativo' };
+            if (coupon.expiry && new Date(coupon.expiry) < new Date()) return { valid: false, message: 'Cupom expirado' };
+            if (coupon.maxUses > 0 && coupon.usedCount >= coupon.maxUses) return { valid: false, message: 'Cupom já utilizado o máximo de vezes' };
+            
+            return { valid: true, coupon };
         }
 
         function setupStoreEventListeners() {
-            // Adicionar ao carrinho (mantido igual)
+            // Adicionar ao carrinho
+            document.querySelectorAll('.add-to-cart').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const productId = parseInt(btn.dataset.id);
+                    const product = DB.products.find(p => p.id === productId);
+                    
+                    if (product && product.stock > 0) {
+                        const existingItem = DB.cart.find(item => item.productId === productId);
+                        
+                        if (existingItem) {
+                            existingItem.quantity += 1;
+                        } else {
+                            DB.cart.push({ productId, quantity: 1 });
+                        }
+                        
+                        saveDB();
+                        renderCart();
+                        
+                        // Atualizar badge do carrinho
+                        const cartBadge = document.getElementById('cartBadge');
+                        cartBadge.textContent = DB.cart.reduce((sum, item) => sum + item.quantity, 0);
+                        
+                        // Mostrar alerta de sucesso
+                        alert(`${product.name} adicionado ao carrinho!`);
+                    } else {
+                        alert('Produto sem estoque disponível!');
+                    }
+                });
+            });
             
-            // Remover do carrinho (mantido igual)
+            // Remover do carrinho
+            document.getElementById('cartItems').addEventListener('click', (e) => {
+                if (e.target.closest('.remove-from-cart')) {
+                    const productId = parseInt(e.target.closest('.remove-from-cart').dataset.id);
+                    DB.cart = DB.cart.filter(item => item.productId !== productId);
+                    saveDB();
+                    renderCart();
+                }
+            });
             
             // Aplicar cupom
             document.getElementById('applyCouponBtn').addEventListener('click', () => {
                 const couponCode = document.getElementById('couponCode').value.trim();
-                if (!couponCode) {
-                    alert('Por favor, insira um código de cupom');
-                    return;
-                }
+                const validation = validateCoupon(couponCode);
                 
-                const coupon = DB.coupons.find(c => 
-                    c.code.toLowerCase() === couponCode.toLowerCase() && 
-                    c.active &&
-                    (c.expiry === null || new Date(c.expiry) >= new Date()) &&
-                    (c.usageLimit === null || c.usedCount < c.usageLimit)
-                );
-                
-                if (coupon) {
-                    updateCouponUI(coupon);
-                    
-                    // Recalcular totais
-                    const subtotal = DB.cart.reduce((sum, item) => {
-                        const product = DB.products.find(p => p.id === item.productId);
-                        return sum + (product ? product.price * item.quantity : 0);
-                    }, 0);
-                    
-                    calculateTotalWithDiscount(subtotal);
-                    alert('Cupom aplicado com sucesso!');
+                if (validation.valid) {
+                    DB.appliedCoupon = {
+                        code: validation.coupon.code,
+                        type: validation.coupon.type,
+                        value: validation.coupon.value
+                    };
+                    saveDB();
+                    renderCart();
                 } else {
-                    alert('Cupom inválido, expirado ou já utilizado');
+                    alert(validation.message);
                 }
             });
             
             // Remover cupom
-            document.getElementById('removeCouponBtn').addEventListener('click', () => {
-                updateCouponUI(null);
-                
-                // Recalcular totais
-                const subtotal = DB.cart.reduce((sum, item) => {
-                    const product = DB.products.find(p => p.id === item.productId);
-                    return sum + (product ? product.price * item.quantity : 0);
-                }, 0);
-                
-                calculateTotalWithDiscount(subtotal);
+            document.getElementById('couponMessage').addEventListener('click', (e) => {
+                if (e.target.classList.contains('remove-coupon')) {
+                    DB.appliedCoupon = null;
+                    saveDB();
+                    renderCart();
+                }
             });
             
-            // Finalizar compra - Atualizado para considerar cupom
+            // Finalizar compra
             document.getElementById('checkoutBtn').addEventListener('click', () => {
                 if (DB.cart.length === 0) {
                     alert('Seu carrinho está vazio!');
                     return;
                 }
                 
-                // Verificar estoque (mantido igual)
+                // Verificar estoque
+                let hasStockIssue = false;
+                DB.cart.forEach(item => {
+                    const product = DB.products.find(p => p.id === item.productId);
+                    if (product.stock < item.quantity) {
+                        hasStockIssue = true;
+                        alert(`Não há estoque suficiente para ${product.name} (disponível: ${product.stock})`);
+                    }
+                });
                 
-                // Calcular totais com desconto
+                if (hasStockIssue) return;
+                
+                // Calcular total com desconto
                 const subtotal = DB.cart.reduce((total, item) => {
                     const product = DB.products.find(p => p.id === item.productId);
                     return total + (product.price * item.quantity);
                 }, 0);
                 
-                const { discount, total } = calculateTotalWithDiscount(subtotal);
+                let discount = 0;
+                if (DB.appliedCoupon) {
+                    const coupon = DB.coupons.find(c => c.code === DB.appliedCoupon.code);
+                    if (coupon) {
+                        if (coupon.type === 'percentage') {
+                            discount = subtotal * (coupon.value / 100);
+                        } else {
+                            discount = coupon.value;
+                        }
+                        
+                        // Atualizar contador de usos do cupom
+                        coupon.usedCount += 1;
+                    }
+                }
+                
+                const total = subtotal - discount;
                 
                 // Criar pedido
                 const orderId = DB.orders.length > 0 ? Math.max(...DB.orders.map(o => o.id)) + 1 : 1;
@@ -507,23 +795,19 @@
                 const newOrder = {
                     id: orderId,
                     date: new Date().toISOString().split('T')[0],
+                    total: total,
                     subtotal: subtotal,
                     discount: discount,
-                    total: total,
+                    coupon: DB.appliedCoupon ? DB.appliedCoupon.code : null,
                     status: "Processando",
-                    items: [...DB.cart],
-                    coupon: DB.appliedCoupon ? { ...DB.appliedCoupon } : null
+                    items: [...DB.cart]
                 };
                 
-                // Atualizar estoque (mantido igual)
-                
-                // Atualizar contagem de uso do cupom
-                if (DB.appliedCoupon) {
-                    const coupon = DB.coupons.find(c => c.id === DB.appliedCoupon.id);
-                    if (coupon) {
-                        coupon.usedCount += 1;
-                    }
-                }
+                // Atualizar estoque
+                DB.cart.forEach(item => {
+                    const product = DB.products.find(p => p.id === item.productId);
+                    product.stock -= item.quantity;
+                });
                 
                 DB.orders.push(newOrder);
                 DB.cart = [];
@@ -543,14 +827,15 @@
         function initAdminPanel() {
             updateStats();
             renderProductsTable();
-            renderOrdersTable();
             renderCouponsTable();
+            renderOrdersTable();
             setupAdminEventListeners();
         }
 
         function updateStats() {
             document.getElementById('totalProducts').textContent = DB.products.length;
             document.getElementById('totalOrders').textContent = DB.orders.length;
+            document.getElementById('totalCoupons').textContent = DB.coupons.length;
             
             const totalSales = DB.orders.reduce((sum, order) => sum + order.total, 0);
             document.getElementById('totalSales').textContent = `R$ ${totalSales.toFixed(2).replace('.', ',')}`;
@@ -579,6 +864,32 @@
             `).join('');
         }
 
+        function renderCouponsTable() {
+            const container = document.getElementById('couponsTable');
+            container.innerHTML = DB.coupons.map(coupon => `
+                <tr>
+                    <td><strong>${coupon.code}</strong></td>
+                    <td>${coupon.type === 'percentage' ? 'Percentual' : 'Valor Fixo'}</td>
+                    <td>${coupon.type === 'percentage' ? `${coupon.value}%` : `R$ ${coupon.value.toFixed(2)}`}</td>
+                    <td>${new Date(coupon.expiry).toLocaleDateString('pt-BR')}</td>
+                    <td>${coupon.usedCount}${coupon.maxUses > 0 ? `/${coupon.maxUses}` : ''}</td>
+                    <td>
+                        <span class="badge ${coupon.active ? 'bg-success' : 'bg-secondary'}">
+                            ${coupon.active ? 'Ativo' : 'Inativo'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-warning edit-coupon" data-id="${coupon.id}">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger delete-coupon" data-id="${coupon.id}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
         function renderOrdersTable() {
             const container = document.getElementById('ordersTable');
             container.innerHTML = DB.orders.map(order => `
@@ -599,32 +910,6 @@
                     <td>
                         <button class="btn btn-sm btn-info view-order" data-id="${order.id}">
                             <i class="bi bi-eye"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-        
-        function renderCouponsTable() {
-            const container = document.getElementById('couponsTable');
-            container.innerHTML = DB.coupons.map(coupon => `
-                <tr>
-                    <td>${coupon.code}</td>
-                    <td>${coupon.type === 'percentage' ? 'Porcentagem' : 'Valor Fixo'}</td>
-                    <td>${coupon.type === 'percentage' ? `${coupon.value}%` : `R$ ${coupon.value.toFixed(2)}`}</td>
-                    <td>${coupon.expiry || 'Sem validade'}</td>
-                    <td>${coupon.usedCount}${coupon.usageLimit ? ` de ${coupon.usageLimit}` : ''}</td>
-                    <td>
-                        <span class="badge ${coupon.active ? 'bg-success' : 'bg-secondary'}">
-                            ${coupon.active ? 'Ativo' : 'Inativo'}
-                        </span>
-                    </td>
-                    <td>
-                        <button class="btn btn-sm btn-warning edit-coupon" data-id="${coupon.id}">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger delete-coupon" data-id="${coupon.id}">
-                            <i class="bi bi-trash"></i>
                         </button>
                     </td>
                 </tr>
@@ -666,7 +951,7 @@
         }
 
         function setupAdminEventListeners() {
-            // Navegação - Adicionado link para Cupons
+            // Navegação
             document.querySelector('.dashboard-link').addEventListener('click', () => {
                 showSection('dashboardSection');
             });
@@ -675,19 +960,91 @@
                 showSection('productsSection');
             });
             
-            document.querySelector('.orders-link').addEventListener('click', () => {
-                showSection('ordersSection');
-            });
-            
             document.querySelector('.coupons-link').addEventListener('click', () => {
                 showSection('couponsSection');
             });
             
-            // Logout (mantido igual)
+            document.querySelector('.orders-link').addEventListener('click', () => {
+                showSection('ordersSection');
+            });
             
-            // Adicionar produto (mantido igual)
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                document.getElementById('dashboardContent').style.display = 'none';
+                document.getElementById('storeContent').style.display = 'block';
+            });
             
-            // Editar produto (mantido igual)
+            // Adicionar produto
+            document.getElementById('addProductBtn').addEventListener('click', () => {
+                document.getElementById('productModalTitle').textContent = 'Adicionar Produto';
+                document.getElementById('productForm').reset();
+                document.getElementById('productId').value = '';
+                new bootstrap.Modal(document.getElementById('productModal')).show();
+            });
+            
+            // Editar produto
+            document.getElementById('productsTable').addEventListener('click', (e) => {
+                if (e.target.closest('.edit-product')) {
+                    const productId = parseInt(e.target.closest('.edit-product').dataset.id);
+                    const product = DB.products.find(p => p.id === productId);
+                    
+                    if (product) {
+                        document.getElementById('productModalTitle').textContent = 'Editar Produto';
+                        document.getElementById('productId').value = product.id;
+                        document.getElementById('productName').value = product.name;
+                        document.getElementById('productPrice').value = product.price;
+                        document.getElementById('productStock').value = product.stock;
+                        document.getElementById('productImage').value = product.image;
+                        document.getElementById('productDescription').value = product.description || '';
+                        
+                        new bootstrap.Modal(document.getElementById('productModal')).show();
+                    }
+                }
+                
+                // Deletar produto
+                if (e.target.closest('.delete-product')) {
+                    const productId = parseInt(e.target.closest('.delete-product').dataset.id);
+                    if (confirm('Tem certeza que deseja excluir este produto?')) {
+                        DB.products = DB.products.filter(p => p.id !== productId);
+                        saveDB();
+                        renderProductsTable();
+                        updateStats();
+                        renderProducts(); // Atualizar também na loja
+                    }
+                }
+            });
+            
+            // Salvar produto
+            document.getElementById('productForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const productId = document.getElementById('productId').value;
+                const productData = {
+                    name: document.getElementById('productName').value,
+                    price: parseFloat(document.getElementById('productPrice').value),
+                    stock: parseInt(document.getElementById('productStock').value),
+                    image: document.getElementById('productImage').value,
+                    description: document.getElementById('productDescription').value
+                };
+                
+                if (productId) {
+                    // Editar produto existente
+                    const index = DB.products.findIndex(p => p.id === parseInt(productId));
+                    if (index >= 0) {
+                        DB.products[index] = { ...DB.products[index], ...productData };
+                    }
+                } else {
+                    // Adicionar novo produto
+                    const newId = DB.products.length > 0 ? Math.max(...DB.products.map(p => p.id)) + 1 : 1;
+                    DB.products.push({ id: newId, ...productData });
+                }
+                
+                saveDB();
+                renderProductsTable();
+                updateStats();
+                renderProducts(); // Atualizar também na loja
+                bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
+            });
             
             // Adicionar cupom
             document.getElementById('addCouponBtn').addEventListener('click', () => {
@@ -695,6 +1052,12 @@
                 document.getElementById('couponForm').reset();
                 document.getElementById('couponId').value = '';
                 document.getElementById('couponActive').checked = true;
+                
+                // Definir data padrão (30 dias no futuro)
+                const defaultDate = new Date();
+                defaultDate.setDate(defaultDate.getDate() + 30);
+                document.getElementById('couponExpiry').value = defaultDate.toISOString().split('T')[0];
+                
                 new bootstrap.Modal(document.getElementById('couponModal')).show();
             });
             
@@ -707,11 +1070,11 @@
                     if (coupon) {
                         document.getElementById('couponModalTitle').textContent = 'Editar Cupom';
                         document.getElementById('couponId').value = coupon.id;
-                        document.getElementById('couponCodeInput').value = coupon.code;
+                        document.getElementById('couponCode').value = coupon.code;
                         document.getElementById('couponType').value = coupon.type;
                         document.getElementById('couponValue').value = coupon.value;
-                        document.getElementById('couponExpiry').value = coupon.expiry || '';
-                        document.getElementById('couponUsageLimit').value = coupon.usageLimit || '';
+                        document.getElementById('couponExpiry').value = coupon.expiry;
+                        document.getElementById('couponMaxUses').value = coupon.maxUses;
                         document.getElementById('couponActive').checked = coupon.active;
                         
                         new bootstrap.Modal(document.getElementById('couponModal')).show();
@@ -725,8 +1088,15 @@
                         DB.coupons = DB.coupons.filter(c => c.id !== couponId);
                         saveDB();
                         renderCouponsTable();
+                        updateStats();
                     }
                 }
+            });
+            
+            // Alterar tipo de cupom
+            document.getElementById('couponType').addEventListener('change', function() {
+                const label = document.getElementById('couponValueLabel');
+                label.textContent = this.value === 'percentage' ? 'Valor do Desconto (%)' : 'Valor do Desconto (R$)';
             });
             
             // Salvar cupom
@@ -735,21 +1105,36 @@
                 
                 const couponId = document.getElementById('couponId').value;
                 const couponData = {
-                    code: document.getElementById('couponCodeInput').value.toUpperCase(),
+                    code: document.getElementById('couponCode').value.toUpperCase(),
                     type: document.getElementById('couponType').value,
                     value: parseFloat(document.getElementById('couponValue').value),
-                    expiry: document.getElementById('couponExpiry').value || null,
-                    usageLimit: document.getElementById('couponUsageLimit').value ? 
-                        parseInt(document.getElementById('couponUsageLimit').value) : null,
+                    expiry: document.getElementById('couponExpiry').value,
+                    maxUses: parseInt(document.getElementById('couponMaxUses').value) || 0,
                     active: document.getElementById('couponActive').checked,
                     usedCount: 0
                 };
+                
+                // Validações
+                if (couponData.value <= 0) {
+                    alert('O valor do desconto deve ser maior que zero');
+                    return;
+                }
+                
+                if (couponData.type === 'percentage' && couponData.value > 100) {
+                    alert('O desconto percentual não pode ser maior que 100%');
+                    return;
+                }
+                
+                if (new Date(couponData.expiry) < new Date()) {
+                    alert('A data de validade não pode ser no passado');
+                    return;
+                }
                 
                 if (couponId) {
                     // Editar cupom existente
                     const index = DB.coupons.findIndex(c => c.id === parseInt(couponId));
                     if (index >= 0) {
-                        // Manter a contagem de usos
+                        // Manter o contador de usos original
                         couponData.usedCount = DB.coupons[index].usedCount;
                         DB.coupons[index] = { ...DB.coupons[index], ...couponData };
                     }
@@ -761,10 +1146,23 @@
                 
                 saveDB();
                 renderCouponsTable();
+                updateStats();
                 bootstrap.Modal.getInstance(document.getElementById('couponModal')).hide();
             });
             
-            // Alterar status do pedido (mantido igual)
+            // Alterar status do pedido
+            document.getElementById('ordersTable').addEventListener('change', (e) => {
+                if (e.target.classList.contains('order-status')) {
+                    const orderId = parseInt(e.target.dataset.id);
+                    const order = DB.orders.find(o => o.id === orderId);
+                    
+                    if (order) {
+                        order.status = e.target.value;
+                        saveDB();
+                        renderRecentOrders();
+                    }
+                }
+            });
         }
 
         function showSection(sectionId) {
@@ -778,7 +1176,29 @@
         document.addEventListener('DOMContentLoaded', () => {
             initStore();
             
-            // Login (mantido igual)
+            // Login
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = this.querySelector('input[type="email"]').value;
+                const password = this.querySelector('input[type="password"]').value;
+                
+                const user = DB.users.find(u => u.email === email && u.password === password);
+                
+                if (user) {
+                    bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+                    
+                    if (user.isAdmin) {
+                        document.getElementById('storeContent').style.display = 'none';
+                        document.getElementById('dashboardContent').style.display = 'block';
+                        initAdminPanel();
+                    } else {
+                        alert('Login realizado com sucesso!');
+                    }
+                } else {
+                    alert('Credenciais inválidas! Use admin@example.com / admin123 para teste.');
+                }
+            });
         });
     </script>
 </body>
