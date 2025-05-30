@@ -3,207 +3,530 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loja Online Funcional</title>
+    <title>Painel Admin - 100% Funcional</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --sidebar-width: 250px;
+        }
+        .sidebar {
+            width: var(--sidebar-width);
+            height: 100vh;
+            position: fixed;
+            background: #343a40;
+            color: white;
+            padding-top: 20px;
+            transition: all 0.3s;
+        }
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        .stat-card {
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 20px;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+        }
+        .admin-only { display: none; }
+        .logged-in .admin-only { display: block; }
+        #dashboardContent { display: none; }
+    </style>
 </head>
 <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="#">Loja 100% Funcional</a>
-            <div class="ms-auto d-flex">
-                <a class="nav-link text-white me-3 cart-icon" data-bs-toggle="offcanvas" href="#cart">
-                    <i class="bi bi-cart3"></i> <span class="cart-count badge bg-danger">0</span>
-                </a>
-                <a class="nav-link text-white" id="loginBtn" href="#">
-                    <i class="bi bi-person"></i>
-                </a>
+    <!-- [Manter todo o código anterior da loja] -->
+
+    <!-- Painel Admin -->
+    <div id="dashboardContent">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="text-center mb-4">
+                <h4>Painel Admin</h4>
+                <small class="text-muted">Bem-vindo, Admin</small>
+            </div>
+            
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active dashboard-link" href="#">
+                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link products-link" href="#">
+                        <i class="bi bi-box-seam me-2"></i> Produtos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link orders-link" href="#">
+                        <i class="bi bi-receipt me-2"></i> Pedidos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="logoutBtn">
+                        <i class="bi bi-box-arrow-right me-2"></i> Sair
+                    </a>
+                </li>
+            </ul>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Dashboard -->
+            <div class="dashboard-section" id="dashboardSection">
+                <h2><i class="bi bi-speedometer2"></i> Dashboard</h2>
+                <hr>
+                
+                <div class="row">
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stat-card" style="background: linear-gradient(135deg, #4e73df, #224abe);">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <h5 class="card-title">PRODUTOS</h5>
+                                        <h2 class="mb-0" id="totalProducts">0</h2>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-box-seam" style="font-size: 2rem; opacity: 0.7;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stat-card" style="background: linear-gradient(135deg, #1cc88a, #13855c);">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <h5 class="card-title">PEDIDOS</h5>
+                                        <h2 class="mb-0" id="totalOrders">0</h2>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-receipt" style="font-size: 2rem; opacity: 0.7;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-xl-3 col-md-6">
+                        <div class="card stat-card" style="background: linear-gradient(135deg, #36b9cc, #258391);">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col">
+                                        <h5 class="card-title">VENDAS</h5>
+                                        <h2 class="mb-0" id="totalSales">R$ 0</h2>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-currency-dollar" style="font-size: 2rem; opacity: 0.7;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card mt-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Últimos Pedidos</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Data</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="recentOrders">
+                                    <!-- Pedidos serão inseridos aqui -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Gerenciamento de Produtos -->
+            <div class="dashboard-section" id="productsSection" style="display: none;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="bi bi-box-seam"></i> Gerenciar Produtos</h2>
+                    <button class="btn btn-primary" id="addProductBtn">
+                        <i class="bi bi-plus"></i> Adicionar Produto
+                    </button>
+                </div>
+                <hr>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Imagem</th>
+                                        <th>Nome</th>
+                                        <th>Preço</th>
+                                        <th>Estoque</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="productsTable">
+                                    <!-- Produtos serão inseridos aqui -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Gerenciamento de Pedidos -->
+            <div class="dashboard-section" id="ordersSection" style="display: none;">
+                <h2><i class="bi bi-receipt"></i> Gerenciar Pedidos</h2>
+                <hr>
+                
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Data</th>
+                                        <th>Cliente</th>
+                                        <th>Total</th>
+                                        <th>Status</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ordersTable">
+                                    <!-- Pedidos serão inseridos aqui -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </nav>
-
-    <!-- Produtos -->
-    <div class="container mt-5 pt-4">
-        <h2 class="my-4">Produtos</h2>
-        <div class="row" id="products"></div>
     </div>
 
-    <!-- Carrinho -->
-    <div class="offcanvas offcanvas-end" tabindex="-1" id="cart">
-        <div class="offcanvas-header">
-            <h5 class="offcanvas-title">Seu Carrinho</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
-        </div>
-        <div class="offcanvas-body">
-            <div id="cart-items"></div>
-            <div class="mt-3 border-top pt-3">
-                <h5>Total: <span id="cart-total">R$ 0,00</span></h5>
-                <button class="btn btn-success w-100 mt-2" id="checkout-btn">Finalizar Compra</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Login Modal -->
-    <div class="modal fade" id="loginModal" tabindex="-1">
+    <!-- Modal para Adicionar/Editar Produto -->
+    <div class="modal fade" id="productModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Login</h5>
+                    <h5 class="modal-title" id="productModalTitle">Adicionar Produto</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body">
-                    <form id="loginForm">
+                    <form id="productForm">
+                        <input type="hidden" id="productId">
                         <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" required>
+                            <label class="form-label">Nome do Produto</label>
+                            <input type="text" class="form-control" id="productName" required>
                         </div>
                         <div class="mb-3">
-                            <label class="form-label">Senha</label>
-                            <input type="password" class="form-control" required>
+                            <label class="form-label">Preço (R$)</label>
+                            <input type="number" step="0.01" class="form-control" id="productPrice" required>
                         </div>
-                        <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                        <div class="mb-3">
+                            <label class="form-label">Quantidade em Estoque</label>
+                            <input type="number" class="form-control" id="productStock" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">URL da Imagem</label>
+                            <input type="url" class="form-control" id="productImage" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Descrição</label>
+                            <textarea class="form-control" id="productDescription" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Salvar</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Dados dos produtos
-        const products = [
-            { id: 1, name: "Smartphone", price: 1999.90, image: "https://via.placeholder.com/200?text=Smartphone" },
-            { id: 2, name: "Notebook", price: 4599.00, image: "https://via.placeholder.com/200?text=Notebook" },
-            { id: 3, name: "Fone Bluetooth", price: 299.90, image: "https://via.placeholder.com/200?text=Fone" }
-        ];
+        // Banco de dados em localStorage
+        const DB = {
+            products: JSON.parse(localStorage.getItem('products')) || [
+                { id: 1, name: "Smartphone", price: 1999.90, stock: 10, image: "https://via.placeholder.com/200?text=Smartphone", description: "Smartphone avançado" },
+                { id: 2, name: "Notebook", price: 4599.00, stock: 5, image: "https://via.placeholder.com/200?text=Notebook", description: "Notebook de última geração" }
+            ],
+            orders: JSON.parse(localStorage.getItem('orders')) || [
+                { id: 1, date: "2023-05-20", total: 1999.90, status: "Entregue", items: [{productId: 1, quantity: 1}] },
+                { id: 2, date: "2023-05-21", total: 4599.00, status: "Processando", items: [{productId: 2, quantity: 1}] }
+            ],
+            users: [
+                { id: 1, email: 'admin@example.com', password: 'admin123', isAdmin: true }
+            ]
+        };
 
-        // Carrinho
-        let cart = [];
-        
-        // Inicialização
-        document.addEventListener('DOMContentLoaded', function() {
-            renderProducts();
+        // Salvar no banco de dados
+        function saveDB() {
+            localStorage.setItem('products', JSON.stringify(DB.products));
+            localStorage.setItem('orders', JSON.stringify(DB.orders));
+        }
+
+        // Inicialização do Painel Admin
+        function initAdminPanel() {
+            updateStats();
+            renderProductsTable();
+            renderOrdersTable();
             setupEventListeners();
-        });
+        }
 
-        function renderProducts() {
-            const container = document.getElementById('products');
-            container.innerHTML = products.map(product => `
-                <div class="col-md-4 mb-4">
-                    <div class="card h-100">
-                        <img src="${product.image}" class="card-img-top p-3" style="height:200px;object-fit:contain;">
-                        <div class="card-body">
-                            <h5 class="card-title">${product.name}</h5>
-                            <p class="card-text">R$ ${product.price.toFixed(2).replace('.', ',')}</p>
-                            <button class="btn btn-primary add-to-cart" data-id="${product.id}">Adicionar</button>
-                        </div>
-                    </div>
-                </div>
+        // Atualizar estatísticas
+        function updateStats() {
+            document.getElementById('totalProducts').textContent = DB.products.length;
+            document.getElementById('totalOrders').textContent = DB.orders.length;
+            
+            const totalSales = DB.orders.reduce((sum, order) => sum + order.total, 0);
+            document.getElementById('totalSales').textContent = `R$ ${totalSales.toFixed(2).replace('.', ',')}`;
+            
+            renderRecentOrders();
+        }
+
+        // Renderizar tabela de produtos
+        function renderProductsTable() {
+            const container = document.getElementById('productsTable');
+            container.innerHTML = DB.products.map(product => `
+                <tr>
+                    <td>${product.id}</td>
+                    <td><img src="${product.image}" width="50"></td>
+                    <td>${product.name}</td>
+                    <td>R$ ${product.price.toFixed(2).replace('.', ',')}</td>
+                    <td>${product.stock}</td>
+                    <td>
+                        <button class="btn btn-sm btn-warning edit-product" data-id="${product.id}">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger delete-product" data-id="${product.id}">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </td>
+                </tr>
             `).join('');
         }
 
+        // Renderizar tabela de pedidos
+        function renderOrdersTable() {
+            const container = document.getElementById('ordersTable');
+            container.innerHTML = DB.orders.map(order => `
+                <tr>
+                    <td>#${order.id}</td>
+                    <td>${order.date}</td>
+                    <td>Cliente ${order.id}</td>
+                    <td>R$ ${order.total.toFixed(2).replace('.', ',')}</td>
+                    <td>
+                        <select class="form-select order-status" data-id="${order.id}" style="width: auto;">
+                            <option ${order.status === 'Pendente' ? 'selected' : ''}>Pendente</option>
+                            <option ${order.status === 'Processando' ? 'selected' : ''}>Processando</option>
+                            <option ${order.status === 'Enviado' ? 'selected' : ''}>Enviado</option>
+                            <option ${order.status === 'Entregue' ? 'selected' : ''}>Entregue</option>
+                            <option ${order.status === 'Cancelado' ? 'selected' : ''}>Cancelado</option>
+                        </select>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-info view-order" data-id="${order.id}">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Renderizar pedidos recentes
+        function renderRecentOrders() {
+            const container = document.getElementById('recentOrders');
+            const recentOrders = DB.orders.slice(0, 5); // Pegar os 5 mais recentes
+            
+            container.innerHTML = recentOrders.map(order => `
+                <tr>
+                    <td>#${order.id}</td>
+                    <td>${order.date}</td>
+                    <td>R$ ${order.total.toFixed(2).replace('.', ',')}</td>
+                    <td>
+                        <span class="badge ${getStatusBadgeClass(order.status)}">
+                            ${order.status}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-info view-order" data-id="${order.id}">
+                            <i class="bi bi-eye"></i> Detalhes
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Classe CSS para status
+        function getStatusBadgeClass(status) {
+            const classes = {
+                'Pendente': 'bg-secondary',
+                'Processando': 'bg-primary',
+                'Enviado': 'bg-info',
+                'Entregue': 'bg-success',
+                'Cancelado': 'bg-danger'
+            };
+            return classes[status] || 'bg-secondary';
+        }
+
+        // Configurar listeners
         function setupEventListeners() {
-            // Adicionar ao carrinho
-            document.addEventListener('click', function(e) {
-                if (e.target.classList.contains('add-to-cart')) {
-                    const productId = parseInt(e.target.dataset.id);
-                    addToCart(productId);
+            // Navegação
+            document.querySelector('.dashboard-link').addEventListener('click', () => {
+                showSection('dashboardSection');
+            });
+            
+            document.querySelector('.products-link').addEventListener('click', () => {
+                showSection('productsSection');
+            });
+            
+            document.querySelector('.orders-link').addEventListener('click', () => {
+                showSection('ordersSection');
+            });
+            
+            // Logout
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                document.getElementById('dashboardContent').style.display = 'none';
+                document.getElementById('homePage').style.display = 'block';
+            });
+            
+            // Adicionar produto
+            document.getElementById('addProductBtn').addEventListener('click', () => {
+                document.getElementById('productModalTitle').textContent = 'Adicionar Produto';
+                document.getElementById('productForm').reset();
+                document.getElementById('productId').value = '';
+                new bootstrap.Modal(document.getElementById('productModal')).show();
+            });
+            
+            // Editar produto
+            document.querySelectorAll('.edit-product').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const productId = parseInt(btn.dataset.id);
+                    const product = DB.products.find(p => p.id === productId);
+                    
+                    if (product) {
+                        document.getElementById('productModalTitle').textContent = 'Editar Produto';
+                        document.getElementById('productId').value = product.id;
+                        document.getElementById('productName').value = product.name;
+                        document.getElementById('productPrice').value = product.price;
+                        document.getElementById('productStock').value = product.stock;
+                        document.getElementById('productImage').value = product.image;
+                        document.getElementById('productDescription').value = product.description || '';
+                        
+                        new bootstrap.Modal(document.getElementById('productModal')).show();
+                    }
+                });
+            });
+            
+            // Deletar produto
+            document.querySelectorAll('.delete-product').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const productId = parseInt(btn.dataset.id);
+                    if (confirm('Tem certeza que deseja excluir este produto?')) {
+                        DB.products = DB.products.filter(p => p.id !== productId);
+                        saveDB();
+                        renderProductsTable();
+                        updateStats();
+                    }
+                });
+            });
+            
+            // Salvar produto
+            document.getElementById('productForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                
+                const productId = document.getElementById('productId').value;
+                const productData = {
+                    name: document.getElementById('productName').value,
+                    price: parseFloat(document.getElementById('productPrice').value),
+                    stock: parseInt(document.getElementById('productStock').value),
+                    image: document.getElementById('productImage').value,
+                    description: document.getElementById('productDescription').value
+                };
+                
+                if (productId) {
+                    // Editar produto existente
+                    const index = DB.products.findIndex(p => p.id === parseInt(productId));
+                    if (index >= 0) {
+                        DB.products[index] = { ...DB.products[index], ...productData };
+                    }
+                } else {
+                    // Adicionar novo produto
+                    const newId = DB.products.length > 0 ? Math.max(...DB.products.map(p => p.id)) + 1 : 1;
+                    DB.products.push({ id: newId, ...productData });
                 }
                 
-                // Remover item
-                if (e.target.classList.contains('remove-item')) {
-                    const productId = parseInt(e.target.dataset.id);
-                    removeFromCart(productId);
+                saveDB();
+                renderProductsTable();
+                updateStats();
+                bootstrap.Modal.getInstance(document.getElementById('productModal')).hide();
+            });
+            
+            // Alterar status do pedido
+            document.querySelectorAll('.order-status').forEach(select => {
+                select.addEventListener('change', () => {
+                    const orderId = parseInt(select.dataset.id);
+                    const order = DB.orders.find(o => o.id === orderId);
+                    
+                    if (order) {
+                        order.status = select.value;
+                        saveDB();
+                        renderRecentOrders();
+                    }
+                });
+            });
+        }
+
+        // Mostrar seção específica
+        function showSection(sectionId) {
+            document.querySelectorAll('.dashboard-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            document.getElementById(sectionId).style.display = 'block';
+        }
+
+        // [Manter todo o código JavaScript anterior da loja]
+        
+        // Modificar a função de login para incluir acesso ao painel admin
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = this.querySelector('input[type="email"]').value;
+            const password = this.querySelector('input[type="password"]').value;
+            
+            const user = DB.users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                bootstrap.Modal.getInstance(document.getElementById('loginModal')).hide();
+                
+                if (user.isAdmin) {
+                    document.getElementById('homePage').style.display = 'none';
+                    document.getElementById('dashboardContent').style.display = 'block';
+                    initAdminPanel();
+                } else {
+                    alert('Login realizado com sucesso!');
                 }
-            });
-            
-            // Login
-            document.getElementById('loginBtn').addEventListener('click', function(e) {
-                e.preventDefault();
-                new bootstrap.Modal(document.getElementById('loginModal')).show();
-            });
-            
-            // Finalizar compra
-            document.getElementById('checkout-btn').addEventListener('click', function() {
-                if (cart.length === 0) {
-                    alert('Carrinho vazio!');
-                    return;
-                }
-                alert(`Compra finalizada! Total: R$ ${calculateTotal().toFixed(2).replace('.', ',')}`);
-                cart = [];
-                updateCart();
-            });
-        }
-
-        function addToCart(productId) {
-            const product = products.find(p => p.id === productId);
-            if (!product) return;
-            
-            const existingItem = cart.find(item => item.id === productId);
-            if (existingItem) {
-                existingItem.quantity++;
             } else {
-                cart.push({ ...product, quantity: 1 });
+                alert('Credenciais inválidas! Use admin@example.com / admin123 para teste.');
             }
-            
-            updateCart();
-            showAlert(`${product.name} adicionado ao carrinho!`);
-        }
-
-        function removeFromCart(productId) {
-            cart = cart.filter(item => item.id !== productId);
-            updateCart();
-        }
-
-        function updateCart() {
-            // Atualizar contador
-            document.querySelector('.cart-count').textContent = cart.reduce((total, item) => total + item.quantity, 0);
-            
-            // Atualizar itens
-            const container = document.getElementById('cart-items');
-            if (cart.length === 0) {
-                container.innerHTML = '<p class="text-muted">Seu carrinho está vazio</p>';
-            } else {
-                container.innerHTML = cart.map(item => `
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="d-flex align-items-center">
-                            <img src="${item.image}" width="50" height="50" class="me-3">
-                            <div>
-                                <h6 class="mb-0">${item.name}</h6>
-                                <small>${item.quantity}x R$ ${item.price.toFixed(2)}</small>
-                            </div>
-                        </div>
-                        <div>
-                            <span>R$ ${(item.price * item.quantity).toFixed(2)}</span>
-                            <button class="btn btn-sm btn-outline-danger ms-2 remove-item" data-id="${item.id}">
-                                <i class="bi bi-trash"></i>
-                            </button>
-                        </div>
-                    </div>
-                `).join('');
-            }
-            
-            // Atualizar total
-            document.getElementById('cart-total').textContent = `R$ ${calculateTotal().toFixed(2).replace('.', ',')}`;
-            
-            // Salvar no localStorage
-            localStorage.setItem('cart', JSON.stringify(cart));
-        }
-
-        function calculateTotal() {
-            return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
-        }
-
-        function showAlert(message) {
-            const alert = document.createElement('div');
-            alert.className = 'alert alert-success position-fixed top-0 end-0 m-3';
-            alert.style.zIndex = '1000';
-            alert.textContent = message;
-            document.body.appendChild(alert);
-            
-            setTimeout(() => alert.remove(), 3000);
-        }
+        });
     </script>
 </body>
 </html>
