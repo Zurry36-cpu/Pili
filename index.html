@@ -3,230 +3,207 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Loja - 100% Funcional</title>
+    <title>Loja Online Funcional</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <style>
-        /* [Manter os estilos existentes] */
-        .admin-only { display: none; }
-        .logged-in .admin-only { display: block; }
-    </style>
 </head>
 <body>
-    <!-- [Manter toda a estrutura HTML existente] -->
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#">Loja 100% Funcional</a>
+            <div class="ms-auto d-flex">
+                <a class="nav-link text-white me-3 cart-icon" data-bs-toggle="offcanvas" href="#cart">
+                    <i class="bi bi-cart3"></i> <span class="cart-count badge bg-danger">0</span>
+                </a>
+                <a class="nav-link text-white" id="loginBtn" href="#">
+                    <i class="bi bi-person"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Produtos -->
+    <div class="container mt-5 pt-4">
+        <h2 class="my-4">Produtos</h2>
+        <div class="row" id="products"></div>
+    </div>
+
+    <!-- Carrinho -->
+    <div class="offcanvas offcanvas-end" tabindex="-1" id="cart">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title">Seu Carrinho</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+        </div>
+        <div class="offcanvas-body">
+            <div id="cart-items"></div>
+            <div class="mt-3 border-top pt-3">
+                <h5>Total: <span id="cart-total">R$ 0,00</span></h5>
+                <button class="btn btn-success w-100 mt-2" id="checkout-btn">Finalizar Compra</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal fade" id="loginModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Login</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="loginForm">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Senha</label>
+                            <input type="password" class="form-control" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Sistema 100% funcional com localStorage como banco de dados temporário
-        const DB = {
-            products: JSON.parse(localStorage.getItem('products')) || [
-                { id: 1, name: "Smartphone XYZ", price: 1999.90, image: "https://via.placeholder.com/300?text=Smartphone", stock: 10 },
-                { id: 2, name: "Notebook Ultra", price: 4599.00, image: "https://via.placeholder.com/300?text=Notebook", stock: 5 }
-            ],
-            users: [
-                { id: 1, email: 'admin@example.com', password: 'admin123', isAdmin: true }
-            ],
-            orders: JSON.parse(localStorage.getItem('orders')) || []
-        };
+        // Dados dos produtos
+        const products = [
+            { id: 1, name: "Smartphone", price: 1999.90, image: "https://via.placeholder.com/200?text=Smartphone" },
+            { id: 2, name: "Notebook", price: 4599.00, image: "https://via.placeholder.com/200?text=Notebook" },
+            { id: 3, name: "Fone Bluetooth", price: 299.90, image: "https://via.placeholder.com/200?text=Fone" }
+        ];
 
-        // Estado da aplicação
-        let currentUser = null;
-        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        // Carrinho
+        let cart = [];
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            renderProducts();
+            setupEventListeners();
+        });
 
-        // Funções do sistema
-        function saveToDB() {
-            localStorage.setItem('products', JSON.stringify(DB.products));
-            localStorage.setItem('orders', JSON.stringify(DB.orders));
+        function renderProducts() {
+            const container = document.getElementById('products');
+            container.innerHTML = products.map(product => `
+                <div class="col-md-4 mb-4">
+                    <div class="card h-100">
+                        <img src="${product.image}" class="card-img-top p-3" style="height:200px;object-fit:contain;">
+                        <div class="card-body">
+                            <h5 class="card-title">${product.name}</h5>
+                            <p class="card-text">R$ ${product.price.toFixed(2).replace('.', ',')}</p>
+                            <button class="btn btn-primary add-to-cart" data-id="${product.id}">Adicionar</button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function setupEventListeners() {
+            // Adicionar ao carrinho
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('add-to-cart')) {
+                    const productId = parseInt(e.target.dataset.id);
+                    addToCart(productId);
+                }
+                
+                // Remover item
+                if (e.target.classList.contains('remove-item')) {
+                    const productId = parseInt(e.target.dataset.id);
+                    removeFromCart(productId);
+                }
+            });
+            
+            // Login
+            document.getElementById('loginBtn').addEventListener('click', function(e) {
+                e.preventDefault();
+                new bootstrap.Modal(document.getElementById('loginModal')).show();
+            });
+            
+            // Finalizar compra
+            document.getElementById('checkout-btn').addEventListener('click', function() {
+                if (cart.length === 0) {
+                    alert('Carrinho vazio!');
+                    return;
+                }
+                alert(`Compra finalizada! Total: R$ ${calculateTotal().toFixed(2).replace('.', ',')}`);
+                cart = [];
+                updateCart();
+            });
+        }
+
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            const existingItem = cart.find(item => item.id === productId);
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            
+            updateCart();
+            showAlert(`${product.name} adicionado ao carrinho!`);
+        }
+
+        function removeFromCart(productId) {
+            cart = cart.filter(item => item.id !== productId);
+            updateCart();
+        }
+
+        function updateCart() {
+            // Atualizar contador
+            document.querySelector('.cart-count').textContent = cart.reduce((total, item) => total + item.quantity, 0);
+            
+            // Atualizar itens
+            const container = document.getElementById('cart-items');
+            if (cart.length === 0) {
+                container.innerHTML = '<p class="text-muted">Seu carrinho está vazio</p>';
+            } else {
+                container.innerHTML = cart.map(item => `
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div class="d-flex align-items-center">
+                            <img src="${item.image}" width="50" height="50" class="me-3">
+                            <div>
+                                <h6 class="mb-0">${item.name}</h6>
+                                <small>${item.quantity}x R$ ${item.price.toFixed(2)}</small>
+                            </div>
+                        </div>
+                        <div>
+                            <span>R$ ${(item.price * item.quantity).toFixed(2)}</span>
+                            <button class="btn btn-sm btn-outline-danger ms-2 remove-item" data-id="${item.id}">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            // Atualizar total
+            document.getElementById('cart-total').textContent = `R$ ${calculateTotal().toFixed(2).replace('.', ',')}`;
+            
+            // Salvar no localStorage
             localStorage.setItem('cart', JSON.stringify(cart));
         }
 
-        function renderAdminProducts() {
-            const container = document.getElementById('adminProductsContainer');
-            if (!container) return;
-            
-            container.innerHTML = DB.products.map(product => `
-                <tr>
-                    <td>${product.id}</td>
-                    <td><img src="${product.image}" width="50"></td>
-                    <td>${product.name}</td>
-                    <td>R$ ${product.price.toFixed(2)}</td>
-                    <td>${product.stock}</td>
-                    <td>
-                        <button class="btn btn-sm btn-warning edit-product" data-id="${product.id}">
-                            <i class="bi bi-pencil"></i>
-                        </button>
-                        <button class="btn btn-sm btn-danger delete-product" data-id="${product.id}">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-            
-            // Adicionar eventos
-            document.querySelectorAll('.edit-product').forEach(btn => {
-                btn.addEventListener('click', () => editProduct(parseInt(btn.dataset.id)));
-            });
-            
-            document.querySelectorAll('.delete-product').forEach(btn => {
-                btn.addEventListener('click', () => deleteProduct(parseInt(btn.dataset.id)));
-            });
+        function calculateTotal() {
+            return cart.reduce((total, item) => total + (item.price * item.quantity), 0);
         }
 
-        function editProduct(id) {
-            const product = DB.products.find(p => p.id === id);
-            if (!product) return;
+        function showAlert(message) {
+            const alert = document.createElement('div');
+            alert.className = 'alert alert-success position-fixed top-0 end-0 m-3';
+            alert.style.zIndex = '1000';
+            alert.textContent = message;
+            document.body.appendChild(alert);
             
-            document.getElementById('editProductId').value = product.id;
-            document.getElementById('editProductName').value = product.name;
-            document.getElementById('editProductPrice').value = product.price;
-            document.getElementById('editProductStock').value = product.stock;
-            document.getElementById('editProductImage').value = product.image;
-            
-            new bootstrap.Modal(document.getElementById('editProductModal')).show();
+            setTimeout(() => alert.remove(), 3000);
         }
-
-        function saveProduct() {
-            const id = parseInt(document.getElementById('editProductId').value);
-            const name = document.getElementById('editProductName').value;
-            const price = parseFloat(document.getElementById('editProductPrice').value);
-            const stock = parseInt(document.getElementById('editProductStock').value);
-            const image = document.getElementById('editProductImage').value;
-            
-            if (id === 0) {
-                // Novo produto
-                const newId = DB.products.length > 0 ? Math.max(...DB.products.map(p => p.id)) + 1 : 1;
-                DB.products.push({ id: newId, name, price, stock, image });
-            } else {
-                // Editar existente
-                const index = DB.products.findIndex(p => p.id === id);
-                if (index >= 0) {
-                    DB.products[index] = { ...DB.products[index], name, price, stock, image };
-                }
-            }
-            
-            saveToDB();
-            renderAdminProducts();
-            renderProducts();
-            bootstrap.Modal.getInstance(document.getElementById('editProductModal')).hide();
-        }
-
-        function deleteProduct(id) {
-            if (confirm('Tem certeza que deseja excluir este produto?')) {
-                DB.products = DB.products.filter(p => p.id !== id);
-                saveToDB();
-                renderAdminProducts();
-                renderProducts();
-            }
-        }
-
-        function addNewProduct() {
-            document.getElementById('editProductForm').reset();
-            document.getElementById('editProductId').value = 0;
-            new bootstrap.Modal(document.getElementById('editProductModal')).show();
-        }
-
-        // [Manter todas as outras funções existentes como renderProducts, addToCart, etc]
-        // Modificar a função de login:
-        function handleLogin(email, password) {
-            const user = DB.users.find(u => u.email === email && u.password === password);
-            if (user) {
-                currentUser = user;
-                document.body.classList.add('logged-in');
-                
-                if (user.isAdmin) {
-                    document.getElementById('homePage').style.display = 'none';
-                    document.getElementById('dashboardContent').style.display = 'block';
-                    renderAdminProducts();
-                    renderAdminOrders();
-                } else {
-                    // Usuário normal
-                    alert('Login realizado com sucesso!');
-                }
-                return true;
-            }
-            return false;
-        }
-
-        // Adicionar no DOMContentLoaded:
-        document.addEventListener('DOMContentLoaded', function() {
-            // [Manter todos os event listeners existentes]
-            
-            // Novo: Admin Product Form
-            document.getElementById('editProductForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                saveProduct();
-            });
-            
-            // Novo: Botão adicionar produto
-            document.getElementById('addProductBtn').addEventListener('click', addNewProduct);
-        });
-
-        // Adicionar esta seção no dashboardContent no HTML:
-        /*
-        <div class="card mt-4">
-            <div class="card-header d-flex justify-content-between">
-                <h5 class="mb-0">Produtos</h5>
-                <button class="btn btn-primary btn-sm" id="addProductBtn">
-                    <i class="bi bi-plus"></i> Adicionar
-                </button>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Imagem</th>
-                                <th>Nome</th>
-                                <th>Preço</th>
-                                <th>Estoque</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminProductsContainer">
-                            <!-- Produtos serão inseridos aqui -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        */
-
-        // Adicionar este modal antes do </body>:
-        /*
-        <div class="modal fade" id="editProductModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">Editar Produto</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="editProductForm">
-                            <input type="hidden" id="editProductId" value="0">
-                            <div class="mb-3">
-                                <label class="form-label">Nome</label>
-                                <input type="text" class="form-control" id="editProductName" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Preço</label>
-                                <input type="number" step="0.01" class="form-control" id="editProductPrice" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Estoque</label>
-                                <input type="number" class="form-control" id="editProductStock" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">URL da Imagem</label>
-                                <input type="url" class="form-control" id="editProductImage" required>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Salvar</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-        */
     </script>
 </body>
 </html>
