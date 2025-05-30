@@ -6,20 +6,266 @@
     <title>Super Loja - Painel Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* Estilos da Loja */
-        .product-card {
-            transition: all 0.3s;
-            height: 100%;
+        /* Estilos Gerais */
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: #f5f5f5;
         }
+        
+        /* Estilos da Loja - Estilo Shopee/AliExpress */
+        .store-header {
+            background-color: #ee4d2d;
+            color: white;
+            padding: 10px 0;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+        }
+        
+        .search-bar {
+            background: white;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        
+        .search-bar input {
+            border: none;
+            outline: none;
+            padding: 10px;
+            width: 100%;
+        }
+        
+        .search-bar button {
+            background: #ee4d2d;
+            color: white;
+            border: none;
+            padding: 0 15px;
+        }
+        
+        .nav-icons a {
+            color: white;
+            font-size: 1.2rem;
+            margin-left: 15px;
+            position: relative;
+        }
+        
+        .badge-cart {
+            position: absolute;
+            top: -5px;
+            right: -8px;
+            background: white;
+            color: #ee4d2d;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Banner */
+        .banner-container {
+            margin-top: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .banner-img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+        }
+        
+        /* Categorias */
+        .categories-container {
+            background: white;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .category-item {
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+        }
+        
+        .category-item img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        
+        .category-item p {
+            margin-top: 5px;
+            font-size: 0.8rem;
+            color: #333;
+        }
+        
+        /* Produtos */
+        .products-container {
+            background: white;
+            border-radius: 5px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .see-all {
+            font-size: 0.9rem;
+            color: #ee4d2d;
+        }
+        
+        .product-card {
+            border: 1px solid #f1f1f1;
+            border-radius: 5px;
+            overflow: hidden;
+            transition: all 0.3s;
+            margin-bottom: 15px;
+        }
+        
         .product-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-        .cart-item-img {
-            width: 60px;
-            height: 60px;
+        
+        .product-img {
+            width: 100%;
+            height: 150px;
             object-fit: cover;
+        }
+        
+        .product-info {
+            padding: 10px;
+        }
+        
+        .product-title {
+            font-size: 0.9rem;
+            color: #333;
+            height: 36px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        
+        .product-price {
+            color: #ee4d2d;
+            font-weight: 600;
+            margin-top: 5px;
+        }
+        
+        .product-original-price {
+            text-decoration: line-through;
+            color: #999;
+            font-size: 0.8rem;
+        }
+        
+        .product-discount {
+            background: #ee4d2d;
+            color: white;
+            font-size: 0.7rem;
+            padding: 2px 5px;
+            border-radius: 3px;
+            margin-left: 5px;
+        }
+        
+        .product-sold {
+            font-size: 0.8rem;
+            color: #999;
+            margin-top: 5px;
+        }
+        
+        /* Carrinho */
+        .cart-offcanvas {
+            width: 400px;
+            max-width: 100%;
+        }
+        
+        .cart-item {
+            border-bottom: 1px solid #f1f1f1;
+            padding: 10px 0;
+        }
+        
+        .cart-item-img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        
+        .cart-item-title {
+            font-size: 0.9rem;
+            color: #333;
+        }
+        
+        .cart-item-price {
+            color: #ee4d2d;
+            font-weight: 600;
+        }
+        
+        .cart-item-quantity {
+            display: flex;
+            align-items: center;
+        }
+        
+        .quantity-btn {
+            width: 25px;
+            height: 25px;
+            border: 1px solid #ddd;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+        
+        .quantity-input {
+            width: 40px;
+            height: 25px;
+            text-align: center;
+            border: 1px solid #ddd;
+            margin: 0 5px;
+        }
+        
+        /* Cupom */
+        .coupon-input {
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            padding: 8px;
+            width: 100%;
+        }
+        
+        .coupon-btn {
+            background: #ee4d2d;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 3px;
+            margin-left: 10px;
+        }
+        
+        /* Checkout */
+        .checkout-btn {
+            background: #ee4d2d;
+            color: white;
+            border: none;
+            padding: 10px;
+            width: 100%;
+            border-radius: 3px;
+            font-weight: 600;
+            margin-top: 15px;
         }
         
         /* Estilos do Painel Admin */
@@ -59,52 +305,113 @@
         .admin-only { display: none; }
         .logged-in .admin-only { display: block; }
         
-        /* Estilo para cupons */
-        .coupon-badge {
-            font-size: 0.8rem;
-            margin-left: 5px;
-        }
-        .discount-text {
-            color: #28a745;
-            font-weight: bold;
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .cart-offcanvas {
+                width: 100%;
+            }
+            
+            .category-item {
+                padding: 5px;
+            }
+            
+            .category-item img {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .category-item p {
+                font-size: 0.7rem;
+            }
         }
     </style>
 </head>
 <body>
     <!-- Loja Virtual -->
     <div id="storeContent">
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <!-- Header -->
+        <header class="store-header">
             <div class="container">
-                <a class="navbar-brand" href="#">Super Loja</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="collapse navbar-collapse" id="navbarNav">
-                    <ul class="navbar-nav me-auto">
-                        <li class="nav-item">
-                            <a class="nav-link active" href="#">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="#">Produtos</a>
-                        </li>
-                    </ul>
-                    <div class="d-flex">
-                        <button class="btn btn-outline-light me-2" data-bs-toggle="modal" data-bs-target="#loginModal">
-                            <i class="bi bi-person"></i> Login
-                        </button>
-                        <button class="btn btn-outline-light position-relative" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
-                            <i class="bi bi-cart"></i> Carrinho
-                            <span id="cartBadge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
-                        </button>
+                <div class="row align-items-center">
+                    <div class="col-md-2 mb-2 mb-md-0">
+                        <a class="navbar-brand text-white fw-bold" href="#">Super Loja</a>
+                    </div>
+                    <div class="col-md-6 mb-2 mb-md-0">
+                        <div class="search-bar d-flex">
+                            <input type="text" placeholder="Buscar produtos...">
+                            <button><i class="bi bi-search"></i></button>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="nav-icons d-flex justify-content-end">
+                            <a href="#"><i class="bi bi-person"></i></a>
+                            <a href="#" data-bs-toggle="modal" data-bs-target="#loginModal">
+                                <span>Login</span>
+                            </a>
+                            <a href="#" data-bs-toggle="offcanvas" data-bs-target="#cartOffcanvas">
+                                <i class="bi bi-cart"></i>
+                                <span class="badge-cart" id="cartBadge">0</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
-        </nav>
+        </header>
 
-        <!-- Conteúdo Principal -->
-        <div class="container my-5">
-            <h1 class="mb-4">Nossos Produtos</h1>
+        <!-- Banner -->
+        <div class="container banner-container mt-3">
+            <img src="https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1000&q=80" 
+                 alt="Banner Promocional" class="banner-img">
+        </div>
+
+        <!-- Categorias -->
+        <div class="container categories-container">
+            <div class="row">
+                <div class="col-3 col-md-2">
+                    <div class="category-item">
+                        <img src="https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Celulares">
+                        <p>Celulares</p>
+                    </div>
+                </div>
+                <div class="col-3 col-md-2">
+                    <div class="category-item">
+                        <img src="https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Notebooks">
+                        <p>Notebooks</p>
+                    </div>
+                </div>
+                <div class="col-3 col-md-2">
+                    <div class="category-item">
+                        <img src="https://images.unsplash.com/photo-1590658268037-6bf12165a8df?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Fones">
+                        <p>Fones</p>
+                    </div>
+                </div>
+                <div class="col-3 col-md-2">
+                    <div class="category-item">
+                        <img src="https://images.unsplash.com/photo-1592155931584-901ac15763e3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="TVs">
+                        <p>TVs</p>
+                    </div>
+                </div>
+                <div class="col-3 col-md-2">
+                    <div class="category-item">
+                        <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Eletrodomésticos">
+                        <p>Eletrodomésticos</p>
+                    </div>
+                </div>
+                <div class="col-3 col-md-2">
+                    <div class="category-item">
+                        <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80" alt="Relógios">
+                        <p>Relógios</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Produtos -->
+        <div class="container products-container mt-3">
+            <div class="section-title">
+                <span>Produtos em Destaque</span>
+                <a href="#" class="see-all">Ver todos</a>
+            </div>
             
             <div class="row" id="productsContainer">
                 <!-- Produtos serão carregados aqui -->
@@ -112,10 +419,10 @@
         </div>
 
         <!-- Carrinho de Compras (Offcanvas) -->
-        <div class="offcanvas offcanvas-end" tabindex="-1" id="cartOffcanvas">
+        <div class="offcanvas offcanvas-end cart-offcanvas" tabindex="-1" id="cartOffcanvas">
             <div class="offcanvas-header">
                 <h5 class="offcanvas-title">Seu Carrinho</h5>
-                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
             </div>
             <div class="offcanvas-body">
                 <div id="cartItems">
@@ -123,17 +430,25 @@
                     <p class="text-muted">Seu carrinho está vazio</p>
                 </div>
                 <div class="mt-3">
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" id="couponCode" placeholder="Código do cupom">
-                        <button class="btn btn-outline-secondary" type="button" id="applyCouponBtn">Aplicar</button>
+                    <div class="d-flex mb-3">
+                        <input type="text" class="coupon-input" id="couponCode" placeholder="Código do cupom">
+                        <button class="coupon-btn" id="applyCouponBtn">Aplicar</button>
                     </div>
                     <div id="couponMessage" class="small mb-2"></div>
-                    <h5>Subtotal: <span id="cartSubtotal">R$ 0,00</span></h5>
-                    <div id="discountContainer" style="display: none;">
-                        <h5 class="discount-text">Desconto: -<span id="cartDiscount">R$ 0,00</span></h5>
+                    <div class="d-flex justify-content-between">
+                        <span>Subtotal:</span>
+                        <span id="cartSubtotal">R$ 0,00</span>
                     </div>
-                    <h5>Total: <span id="cartTotal">R$ 0,00</span></h5>
-                    <button class="btn btn-primary w-100 mt-3" id="checkoutBtn">Finalizar Compra</button>
+                    <div id="discountContainer" style="display: none;" class="d-flex justify-content-between">
+                        <span class="text-danger">Desconto:</span>
+                        <span class="text-danger" id="cartDiscount">-R$ 0,00</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between fw-bold">
+                        <span>Total:</span>
+                        <span id="cartTotal">R$ 0,00</span>
+                    </div>
+                    <button class="checkout-btn" id="checkoutBtn">Finalizar Compra</button>
                 </div>
             </div>
         </div>
@@ -548,17 +863,15 @@
             const container = document.getElementById('productsContainer');
             container.innerHTML = DB.products.map(product => `
                 <div class="col-md-4 mb-4">
-                    <div class="card product-card">
-                        <img src="${product.image}" class="card-img-top" alt="${product.name}" style="height: 200px; object-fit: cover;">
-                        <div class="card-body">
-                            <h5 class="card-title">${product.name}</h5>
-                            <p class="card-text">${product.description}</p>
-                            <div class="d-flex justify-content-between align-items-center">
-                                <h5 class="mb-0">R$ ${product.price.toFixed(2).replace('.', ',')}</h5>
-                                <button class="btn btn-primary add-to-cart" data-id="${product.id}">
-                                    <i class="bi bi-cart-plus"></i> Adicionar
-                                </button>
-                            </div>
+                    <div class="product-card">
+                        <img src="${product.image}" class="product-img" alt="${product.name}">
+                        <div class="product-info">
+                            <div class="product-title">${product.name}</div>
+                            <div class="product-price">R$ ${product.price.toFixed(2).replace('.', ',')}</div>
+                            <div class="product-sold">Vendido: ${Math.floor(Math.random() * 100)}</div>
+                            <button class="btn btn-primary w-100 mt-2 add-to-cart" data-id="${product.id}">
+                                <i class="bi bi-cart-plus"></i> Adicionar
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -592,18 +905,20 @@
                 subtotal += itemTotal;
                 
                 return `
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div class="d-flex align-items-center">
-                            <img src="${product.image}" class="cart-item-img me-3" alt="${product.name}">
-                            <div>
-                                <h6 class="mb-0">${product.name}</h6>
-                                <small class="text-muted">R$ ${product.price.toFixed(2).replace('.', ',')} x ${item.quantity}</small>
+                    <div class="cart-item">
+                        <div class="d-flex justify-content-between">
+                            <div class="d-flex">
+                                <img src="${product.image}" class="cart-item-img me-3" alt="${product.name}">
+                                <div>
+                                    <div class="cart-item-title">${product.name}</div>
+                                    <div class="cart-item-price">R$ ${product.price.toFixed(2).replace('.', ',')}</div>
+                                </div>
                             </div>
-                        </div>
-                        <div>
-                            <button class="btn btn-sm btn-outline-danger remove-from-cart" data-id="${product.id}">
-                                <i class="bi bi-trash"></i>
-                            </button>
+                            <div class="cart-item-quantity">
+                                <button class="quantity-btn decrease-quantity" data-id="${product.id}">-</button>
+                                <input type="text" class="quantity-input" value="${item.quantity}" readonly>
+                                <button class="quantity-btn increase-quantity" data-id="${product.id}">+</button>
+                            </div>
                         </div>
                     </div>
                 `;
@@ -629,7 +944,7 @@
                     total = subtotal - discount;
                     
                     discountContainer.style.display = 'block';
-                    cartDiscount.textContent = `R$ ${discount.toFixed(2).replace('.', ',')}`;
+                    cartDiscount.textContent = `-R$ ${discount.toFixed(2).replace('.', ',')}`;
                 } else {
                     DB.appliedCoupon = null;
                     saveDB();
@@ -717,6 +1032,41 @@
                     DB.cart = DB.cart.filter(item => item.productId !== productId);
                     saveDB();
                     renderCart();
+                }
+            });
+            
+            // Aumentar quantidade
+            document.getElementById('cartItems').addEventListener('click', (e) => {
+                if (e.target.classList.contains('increase-quantity')) {
+                    const productId = parseInt(e.target.dataset.id);
+                    const item = DB.cart.find(item => item.productId === productId);
+                    const product = DB.products.find(p => p.id === productId);
+                    
+                    if (item && product && item.quantity < product.stock) {
+                        item.quantity += 1;
+                        saveDB();
+                        renderCart();
+                    } else {
+                        alert('Quantidade máxima em estoque atingida!');
+                    }
+                }
+            });
+            
+            // Diminuir quantidade
+            document.getElementById('cartItems').addEventListener('click', (e) => {
+                if (e.target.classList.contains('decrease-quantity')) {
+                    const productId = parseInt(e.target.dataset.id);
+                    const item = DB.cart.find(item => item.productId === productId);
+                    
+                    if (item) {
+                        if (item.quantity > 1) {
+                            item.quantity -= 1;
+                        } else {
+                            DB.cart = DB.cart.filter(i => i.productId !== productId);
+                        }
+                        saveDB();
+                        renderCart();
+                    }
                 }
             });
             
